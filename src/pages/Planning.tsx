@@ -203,6 +203,33 @@ export default function Planning() {
 
   if (!session) return null
 
+  // Aide contextuelle : la chronologie est identique sur tous les ecrans,
+  // le calendrier n'a pas la meme restitution au mobile (liste) qu'a l'ecran
+  // large (grille). Les deux variantes cohabitent et la feuille de style
+  // choisit laquelle afficher, comme pour la grille du calendrier.
+  const aide = () => {
+    if (vue === 'chronologie') {
+      return (
+        <p className="planning-aide">
+          Clique sur une barre pour consulter et modifier une réservation. Deux séjours
+          peuvent se suivre à midi.
+        </p>
+      )
+    }
+    return (
+      <>
+        <p className="planning-aide aide-desktop">
+          Clique sur un jour du calendrier pour y préremplir une réservation, ou sur un nom pour
+          consulter et modifier une réservation existante. Deux séjours peuvent se suivre à midi.
+        </p>
+        <p className="planning-aide aide-mobile">
+          Appuie sur « Nouvelle réservation » pour créer une réservation, ou sur une ligne de la
+          liste pour la consulter ou la modifier. Deux séjours peuvent se suivre à midi.
+        </p>
+      </>
+    )
+  }
+
   return (
     <section className="module">
       <div className="planning-tete">
@@ -274,10 +301,7 @@ export default function Planning() {
         <Chronologie annee={annee} mois={mois} reservations={reservations} onClicReservation={ouvrir} />
       )}
 
-      <p className="planning-aide">
-        Clique sur un jour du calendrier pour y préremplir une réservation, ou sur un nom pour
-        consulter et modifier une réservation existante. Deux séjours peuvent se suivre à midi.
-      </p>
+      {aide()}
     </section>
   )
 }

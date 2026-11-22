@@ -620,7 +620,6 @@ textarea {
   background: var(--fond);
   resize: vertical;
 }
-
 textarea:focus {
   outline: 2px solid var(--vert-fonce);
   outline-offset: -1px;
@@ -660,13 +659,48 @@ textarea:focus {
   color: var(--encre-claire);
 }
 
+/* Variante mobile du message d'aide, masquee par defaut :
+   la feuille de style choisit laquelle des deux s'affiche,
+   comme pour la grille et la liste du calendrier. */
+
+.aide-mobile {
+  display: none;
+}
+
 @media (max-width: 620px) {
   .champ-ligne {
     grid-template-columns: 1fr;
   }
 
+  .contenu {
+    padding: 1rem;
+  }
+
   .planning-outils {
     justify-content: flex-start;
+    gap: 0.6rem;
+  }
+
+  /* La barre de navigation tient sur une ligne : le titre du mois
+     occupe l'espace restant au lieu d'imposer 160 px, ce qui donne
+     la place necessaire au bouton Aujourd'hui. */
+
+  .planning-nav {
+    flex: 1 1 100%;
+    min-width: 0;
+    gap: 0.3rem;
+  }
+
+  .planning-mois {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .btn.fantome {
+    padding: 0.5rem 0.65rem;
   }
 
   .cal-desktop {
@@ -677,5 +711,13 @@ textarea:focus {
     display: flex;
     flex-direction: column;
     gap: 8px;
+  }
+
+  .aide-desktop {
+    display: none;
+  }
+
+  .aide-mobile {
+    display: block;
   }
 }
