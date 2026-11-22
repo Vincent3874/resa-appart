@@ -21,6 +21,9 @@ interface Props {
 
 // Formulaire unique de creation et de modification.
 // Les heures sont masquees a midi par defaut, reglable finement via le bloc depliant.
+// La suppression se confirme dans le formulaire lui-meme : aucun dialogue natif
+// du navigateur, dont l'apparence (bandeau systeme, nom de domaine) est hors de
+// controle de l'application.
 export default function ReservationForm({
   initial,
   suggestions,
@@ -37,6 +40,7 @@ export default function ReservationForm({
   const [dateFin, setDateFin] = useState(versInputDate(initial.fin))
   const [heureFin, setHeureFin] = useState(versInputHeure(initial.fin))
   const [comment, setComment] = useState(initial.comment)
+  const [confirmeSuppression, setConfirmeSuppression] = useState(false)
 
   const envoyer = (e: FormEvent) => {
     e.preventDefault()
@@ -128,8 +132,13 @@ export default function ReservationForm({
           <button className="btn principal" type="submit" disabled={enCours}>
             {enCours ? 'Enregistrement…' : enEdition ? 'Enregistrer les modifications' : 'Réserver'}
           </button>
-          {enEdition && onSupprime && (
-            <button className="btn danger" type="button" disabled={enCours} onClick={onSupprime}>
+          {enEdition && onSupprime && !confirmeSuppression && (
+            <button
+              className="btn danger"
+              type="button"
+              disabled={enCours}
+              onClick={() => setConfirmeSuppression(true)}
+            >
               Supprimer
             </button>
           )}
@@ -137,6 +146,31 @@ export default function ReservationForm({
             Annuler
           </button>
         </div>
+        {confirmeSuppression && (
+          <div className="confirmation-suppression">
+            <p>Supprimer définitivement cette réservation ?</p>
+            <div className="form-actions">
+              <button
+                className="btn danger"
+                type="button"
+                disabled={enCours}
+                onClick={() => {
+                  if (onSupprime) onSupprime()
+                }}
+              >
+                {enCours ? 'Suppression…' : 'Oui, supprimer'}
+              </button>
+              <button
+                className="btn lien"
+                type="button"
+                disabled={enCours}
+                onClick={() => setConfirmeSuppression(false)}
+              >
+                Non, conserver
+              </button>
+            </div>
+          </div>
+        )}
       </form>
     </div>
   )

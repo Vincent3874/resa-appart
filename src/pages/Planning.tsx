@@ -184,9 +184,10 @@ export default function Planning() {
     setEnCours(false)
   }
 
+  // La confirmation de suppression se fait dans le formulaire (bloc rouge),
+  // sans fenetre native du navigateur.
   const supprimer = async () => {
     if (!formulaire?.reservation) return
-    if (!window.confirm(`Supprimer la réservation de ${formulaire.reservation.occupant} ?`)) return
     setEnCours(true)
     setErreur('')
     try {
