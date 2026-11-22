@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react'
 import { NavLink, Outlet, useNavigate } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
 import { useAuth } from '../auth/AuthContext'
@@ -5,6 +6,33 @@ import { useAuth } from '../auth/AuthContext'
 export default function Layout() {
   const { session } = useAuth()
   const navigate = useNavigate()
+  // L'onglet Comptabilité n'est affiché qu'aux administrateurs (profiles.is_admin) ;
+  // la RLS via resa.est_admin() reste le contrôle réel côté serveur.
+  const [estAdmin, setEstAdmin] = useState(false)
+
+  useEffect(() => {
+    if (!session) {
+      setEstAdmin(false)
+      return
+    }
+    let actif = true
+    const charger = async () => {
+      try {
+        const { data, error } = await supabase
+          .from('profiles')
+          .select('is_admin')
+          .eq('id', session.user.id)
+          .single()
+        if (actif && !error) setEstAdmin(data?.is_admin ?? false)
+      } catch {
+        // Profil illisible : l'onglet reste masqué, la RLS tranchera côté serveur.
+      }
+    }
+    charger()
+    return () => {
+      actif = false
+    }
+  }, [session])
 
   const deconnexion = async () => {
     await supabase.auth.signOut()
@@ -27,7 +55,7 @@ export default function Layout() {
             Planning
           </NavLink>
           <NavLink to="/notes">Notes</NavLink>
-          <NavLink to="/comptabilite">Comptabilité</NavLink>
+          {estAdmin && <NavLink to="/comptabilite">Comptabilité</NavLink>}
         </nav>
         <div className="bandeau-profil">
           <span className="courriel" title={courant}>
