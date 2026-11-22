@@ -850,6 +850,12 @@ select:focus {
   .graphiques-compta {
     grid-template-columns: 1fr 1fr;
   }
+
+  /* La répartition par membre occupe toute la largeur sous les deux autres graphiques. */
+
+  .carte-graphique.large {
+    grid-column: 1 / -1;
+  }
 }
 
 .carte-graphique {

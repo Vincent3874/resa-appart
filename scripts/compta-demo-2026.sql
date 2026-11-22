@@ -1,9 +1,13 @@
 -- scripts/compta-demo-2026.sql
 -- Exercice complet de démonstration 2026 pour le jalon J5 (module comptabilité).
 -- À exécuter UNE SEULE FOIS dans le SQL editor du dashboard Supabase (projet
--- MyMeteo, schéma exposé 'resa'). Le script est sans effet si des écritures
+-- MyMeteo, schéma exposé 'resa'), APRÈS la migration
+-- scripts/migrations/001_compta_regle_par_date_reglement.sql (colonnes
+-- regle_par / date_reglement). Le script est sans effet si des écritures
 -- de l'année 2026 existent déjà : aucune donnée réelle n'est modifiée.
--- L'auteur des écritures est le premier profil administrateur (Vincent).
+-- L'auteur des écritures et le bénéficiaire des règlements est le premier
+-- profil administrateur (Vincent) ; la date de règlement est la date de
+-- l'écriture.
 
 DO $$
 BEGIN
@@ -17,13 +21,15 @@ BEGIN
     RETURN;
   END IF;
 
-  INSERT INTO resa.accounting_entries (category_id, amount, entry_date, label, comment, created_by)
+  INSERT INTO resa.accounting_entries (category_id, amount, entry_date, label, comment, created_by, regle_par, date_reglement)
   SELECT c.id,
          v.montant,
          v.date_ecriture,
          v.libelle,
          v.commentaire,
-         (SELECT id FROM resa.profiles WHERE is_admin ORDER BY created_at LIMIT 1)
+         (SELECT id FROM resa.profiles WHERE is_admin ORDER BY created_at LIMIT 1),
+         (SELECT id FROM resa.profiles WHERE is_admin ORDER BY created_at LIMIT 1),
+         v.date_ecriture
   FROM (VALUES
     -- Coûts fixes
     (1, 1280.00::numeric, DATE '2026-01-19', 'Taxe d''habitation 2026'::text, NULL::text),
