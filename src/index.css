@@ -675,6 +675,168 @@ textarea:focus {
   display: none;
 }
 
+/* --- Notes --- */
+
+select {
+  font: inherit;
+  padding: 0.6rem 0.75rem;
+  border: 1px solid var(--bordure);
+  border-radius: var(--rayon);
+  background: var(--fond);
+}
+
+select:focus {
+  outline: 2px solid var(--vert-fonce);
+  outline-offset: -1px;
+  background: #fff;
+}
+
+.notes-filtres {
+  display: flex;
+  align-items: flex-end;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  margin: 1.25rem 0 1rem;
+}
+
+.notes-filtres .champ {
+  min-width: 180px;
+}
+
+.notes-compte {
+  margin-left: auto;
+  font-size: 0.85rem;
+  color: var(--encre-claire);
+}
+
+/* Vue desktop des notes : une grille de cartes. */
+
+.notes-desktop {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 0.75rem;
+}
+
+.note-carte {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  background: var(--blanc);
+  border: 1px solid var(--bordure);
+  border-radius: var(--rayon);
+  padding: 0.9rem 1rem;
+  cursor: pointer;
+  transition: border-color 0.15s;
+}
+
+.note-carte:hover {
+  border-color: var(--vert-fonce);
+}
+
+.note-badges {
+  display: flex;
+  gap: 0.4rem;
+  flex-wrap: wrap;
+}
+
+.badge-note {
+  font-size: 0.7rem;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 999px;
+  border: 1px solid;
+}
+
+.badge-statut {
+  background: var(--fond);
+  color: var(--encre-claire);
+  border-color: var(--bordure);
+}
+
+.note-titre {
+  font-weight: 600;
+  font-size: 1rem;
+}
+
+.note-extrait {
+  font-size: 0.85rem;
+  color: var(--encre-claire);
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  white-space: pre-line;
+}
+
+.note-meta {
+  margin-top: auto;
+  font-size: 0.75rem;
+  color: var(--encre-claire);
+}
+
+/* Vue mobile des notes : la grille laisse place a une liste compacte,
+   plus lisible sur ecran etroit. */
+
+.notes-mobile {
+  display: none;
+}
+
+.note-mobile {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  width: 100%;
+  text-align: left;
+  font: inherit;
+  background: var(--blanc);
+  border: 1px solid var(--bordure);
+  border-radius: var(--rayon);
+  padding: 0.7rem 0.9rem;
+  cursor: pointer;
+}
+
+.note-mobile:hover {
+  border-color: var(--vert-fonce);
+}
+
+.note-mobile .pastille {
+  flex: none;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  border: 1px solid;
+}
+
+.note-mobile .infos {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.note-mobile .nom {
+  font-weight: 600;
+  font-size: 0.95rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.note-mobile .nom .badge-note {
+  font-size: 0.62rem;
+  padding: 1px 6px;
+  margin-right: 2px;
+}
+
+.note-mobile .dates {
+  font-size: 0.8rem;
+  color: var(--encre-claire);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 @media (max-width: 620px) {
   .champ-ligne {
     grid-template-columns: 1fr;
@@ -738,5 +900,27 @@ textarea:focus {
 
   .aide-mobile {
     display: block;
+  }
+
+  /* La grille de cartes laisse place a la liste compacte des notes. */
+
+  .notes-desktop {
+    display: none;
+  }
+
+  .notes-mobile {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .notes-filtres .champ {
+    flex: 1 1 40%;
+    min-width: 0;
+  }
+
+  .notes-compte {
+    flex-basis: 100%;
+    margin-left: 0;
   }
 }
