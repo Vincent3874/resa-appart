@@ -1,6 +1,6 @@
 import { useState, type FormEvent } from 'react'
-import type { CategorieCompta, ChampsEntree } from '../lib/comptabilite'
-import { versInputDate } from '../lib/reservations'
+import { labelReglement, type CategorieCompta, type ChampsEntree } from '../lib/comptabilite'
+import { versInputDate, type Profil } from '../lib/reservations'
 
 export interface ChampsEntreeSaisie {
   category_id: number
@@ -8,11 +8,14 @@ export interface ChampsEntreeSaisie {
   entry_date: string
   label: string
   comment: string
+  regle_par: string
+  date_reglement: string
 }
 
 interface Props {
   initial: ChampsEntreeSaisie
   categories: CategorieCompta[]
+  admins: Profil[]
   enEdition: boolean
   meta?: string
   enCours: boolean
@@ -28,6 +31,7 @@ interface Props {
 export default function EntreeForm({
   initial,
   categories,
+  admins,
   enEdition,
   meta,
   enCours,
@@ -40,11 +44,17 @@ export default function EntreeForm({
   const [dateEcriture, setDateEcriture] = useState(initial.entry_date || versInputDate(new Date()))
   const [libelle, setLibelle] = useState(initial.label)
   const [commentaire, setCommentaire] = useState(initial.comment)
+  const [reglePar, setReglePar] = useState(initial.regle_par)
+  const [dateReglement, setDateReglement] = useState(initial.date_reglement)
   const [confirmeSuppression, setConfirmeSuppression] = useState(false)
 
   const actives = categories.filter((c) => c.is_active)
   const depenses = actives.filter((c) => c.direction === 'depense')
   const recettes = actives.filter((c) => c.direction === 'recette')
+
+  // Libellés du règlement selon le sens du poste choisi : un coût est payé,
+  // une recette est reçue.
+  const libReglement = labelReglement(categories.find((c) => c.id === categoryId)?.direction)
 
   const envoyer = (e: FormEvent) => {
     e.preventDefault()
@@ -56,6 +66,8 @@ export default function EntreeForm({
       entry_date: dateEcriture,
       label: libelle.trim() === '' ? null : libelle.trim(),
       comment: commentaire.trim() === '' ? null : commentaire.trim(),
+      regle_par: reglePar === '' ? null : reglePar,
+      date_reglement: dateReglement === '' ? null : dateReglement,
     })
   }
 
@@ -111,6 +123,28 @@ export default function EntreeForm({
               required
               value={dateEcriture}
               onChange={(e) => setDateEcriture(e.target.value)}
+            />
+          </div>
+        </div>
+        <div className="champ-ligne">
+          <div className="champ">
+            <label htmlFor="regle-par">{libReglement.qui} (facultatif)</label>
+            <select id="regle-par" value={reglePar} onChange={(e) => setReglePar(e.target.value)}>
+              <option value="">—</option>
+              {admins.map((a) => (
+                <option key={a.id} value={a.id}>
+                  {a.display_name}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div className="champ">
+            <label htmlFor="date-reglement">{libReglement.date} (facultatif)</label>
+            <input
+              id="date-reglement"
+              type="date"
+              value={dateReglement}
+              onChange={(e) => setDateReglement(e.target.value)}
             />
           </div>
         </div>

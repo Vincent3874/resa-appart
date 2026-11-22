@@ -1,4 +1,5 @@
 import { supabase } from './supabase'
+import type { Profil } from './reservations'
 
 export type Direction = 'depense' | 'recette'
 
@@ -18,6 +19,8 @@ export interface EntreeCompta {
   entry_date: string
   label: string | null
   comment: string | null
+  regle_par: string | null
+  date_reglement: string | null
   created_by: string
   created_at: string
   updated_at: string
@@ -30,6 +33,29 @@ export interface ChampsEntree {
   entry_date: string
   label: string | null
   comment: string | null
+  regle_par: string | null
+  date_reglement: string | null
+}
+
+// Ligne du graphique de répartition : ce qu'un membre a payé (coûts) ou reçu
+// (recettes) sur une année.
+export interface LigneRepartition {
+  membre: string
+  paye: number
+  recu: number
+}
+
+export interface RepartitionAnnee {
+  annee: number
+  lignes: LigneRepartition[]
+}
+
+// Libellés du règlement, adaptés au sens de l'écriture : un coût est « payé »,
+// une recette est « reçue ».
+export function labelReglement(direction: Direction | undefined): { qui: string; date: string } {
+  return direction === 'recette'
+    ? { qui: 'Reçu par', date: 'Date d’encaissement' }
+    : { qui: 'Payé par', date: 'Date de paiement' }
 }
 
 // Colonnes des vues SQL du schéma resa (v_compta_solde_annuel, v_compta_poste_annee).
@@ -61,7 +87,20 @@ export async function chargerEstAdmin(userId: string): Promise<boolean> {
   return data?.is_admin ?? false
 }
 
-const COLONNES = 'id, category_id, amount, entry_date, label, comment, created_by, created_at, updated_at, updated_by'
+// Membres administrateurs : seuls eux sont proposés comme payeur/receveur
+// d'un règlement (la compta est réservée aux administrateurs).
+export async function chargerAdmins(): Promise<Profil[]> {
+  const { data, error } = await supabase
+    .from('profiles')
+    .select('id, display_name')
+    .eq('is_admin', true)
+    .order('display_name', { ascending: true })
+  if (error) throw error
+  return (data as Profil[]) ?? []
+}
+
+const COLONNES =
+  'id, category_id, amount, entry_date, label, comment, regle_par, date_reglement, created_by, created_at, updated_at, updated_by'
 
 // Toutes les écritures, de la plus récente à la plus ancienne.
 // Le volume familial reste tres faible, aucune pagination necessaire.
@@ -143,6 +182,9 @@ export function messageErreurCompta(e: unknown): string {
   }
   if (code === '42501') {
     return 'La comptabilité est réservée aux administrateurs.'
+  }
+  if (code === '42703') {
+    return 'La base n’est pas encore à jour (colonne inconnue) : applique la dernière migration SQL dans le dashboard Supabase, puis recharge la page.'
   }
   return 'Enregistrement impossible pour le moment. Réessaie dans un instant.'
 }
