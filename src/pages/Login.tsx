@@ -21,10 +21,14 @@ export default function Login() {
     })
     setEnCours(false)
     if (error) {
-      setErreur('Envoi impossible pour cette adresse. Vérifie qu’elle a bien été invitée par un administrateur.')
+      if (error.status === 429) {
+        setErreur('Trop de demandes en peu de temps. Le service d\'envoi limite les courriels à deux par heure : patiente un peu avant de redemander un code.')
+        return
+      }
+      setErreur('Envoi impossible pour cette adresse. Vérifie qu\'elle a bien été invitée par un administrateur.')
       return
     }
-    setInfo('Un code à six chiffres vient d’être envoyé à ton adresse. Il expire dans une heure.')
+    setInfo('Un code à six chiffres vient d\'être envoyé à ton adresse. Il expire dans une heure.')
     setEtape('code')
   }
 
