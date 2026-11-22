@@ -259,11 +259,7 @@ export default function Notes() {
         </>
       )}
 
-      <p className="planning-aide aide-desktop">
-        Clique sur une carte pour consulter et modifier une note. Tout membre peut créer, modifier ou
-        supprimer une note, y compris celle d’un autre membre. Filtre la liste par type et par statut.
-      </p>
-      <p className="planning-aide aide-mobile">
+      <p className="planning-aide">
         Appuie sur « Nouvelle note » pour en créer une, ou sur une carte pour la consulter ou la modifier.
         Les filtres par type et par statut se règlent au-dessus de la liste.
       </p>
