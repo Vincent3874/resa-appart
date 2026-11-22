@@ -37,7 +37,8 @@ jobs:
 
       - name: Televersement de l'artefact
         uses: actions/upload-pages-artifact@v3
-        with: dist
+        with:
+          path: dist
 
   deploy:
     needs: build
