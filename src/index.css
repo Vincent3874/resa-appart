@@ -292,6 +292,14 @@ input:focus {
   text-transform: capitalize;
 }
 
+/* Variante abregee du titre du mois, masquee par defaut : sur ecran etroit,
+   « novembre 2026 » serait tronque et l'annee disparaitrait ; « nov. 2026 »
+   tient dans la barre de navigation. */
+
+.mois-abrege {
+  display: none;
+}
+
 .btn.fantome {
   background: var(--blanc);
   border: 1px solid var(--bordure);
@@ -697,6 +705,17 @@ textarea:focus {
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+  }
+
+  /* Le titre du mois passe a la forme abregee (nov. 2026) pour que
+     l'annee reste lisible sur les mois longs. */
+
+  .mois-entier {
+    display: none;
+  }
+
+  .mois-abrege {
+    display: inline;
   }
 
   .btn.fantome {

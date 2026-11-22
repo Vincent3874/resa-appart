@@ -22,6 +22,13 @@ interface EtatFormulaire {
   initial: ChampsReservation
 }
 
+// Titre abrege pour ecran mobile : « nov. 2026 » tient dans la barre de
+// navigation, la ou « novembre 2026 » serait tronque et l'annee perdue.
+const titreMoisAbrege = (annee: number, mois: number) =>
+  new Intl.DateTimeFormat('fr-FR', { month: 'short', year: 'numeric' }).format(
+    new Date(annee, mois, 1),
+  )
+
 export default function Planning() {
   const { session } = useAuth()
   const [reservations, setReservations] = useState<Reservation[] | null>(null)
@@ -261,7 +268,10 @@ export default function Planning() {
           <button className="btn fantome" type="button" onClick={() => changerMois(-1)} aria-label="Mois précédent">
             ◀
           </button>
-          <span className="planning-mois">{titreMois(annee, mois)}</span>
+          <span className="planning-mois">
+            <span className="mois-entier">{titreMois(annee, mois)}</span>
+            <span className="mois-abrege">{titreMoisAbrege(annee, mois)}</span>
+          </span>
           <button className="btn fantome" type="button" onClick={() => changerMois(1)} aria-label="Mois suivant">
             ▶
           </button>
