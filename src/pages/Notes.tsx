@@ -191,7 +191,7 @@ export default function Notes() {
       )}
 
       {notes !== null && (
-        <div className="notes-filtres">
+        <div className="filtres">
           <div className="champ">
             <label htmlFor="filtre-type">Type</label>
             <select id="filtre-type" value={filtreType} onChange={(e) => setFiltreType(e.target.value)}>
@@ -218,7 +218,7 @@ export default function Notes() {
           <button className="btn fantome" type="button" onClick={reinitialiserFiltres}>
             Réinitialiser les filtres
           </button>
-          <span className="notes-compte">{texteCompte(filtrees.length, notes.length)}</span>
+          <span className="compteur">{texteCompte(filtrees.length, notes.length)}</span>
         </div>
       )}
 
