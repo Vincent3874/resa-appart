@@ -1,0 +1,261 @@
+:root {
+  --vert-fonce: #2f6b4f;
+  --vert-clair: #e8f2ec;
+  --encre: #22302a;
+  --encre-claire: #5c6b63;
+  --fond: #f6f8f6;
+  --blanc: #ffffff;
+  --bordure: #d9e2dc;
+  --rouge: #b3402f;
+  --rayon: 10px;
+  font-family: "Segoe UI", system-ui, -apple-system, Roboto, "Helvetica Neue", sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  color: var(--encre);
+  background: var(--fond);
+}
+
+.page {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.bandeau {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+  padding: 0.75rem 1.5rem;
+  background: var(--vert-fonce);
+  color: #fff;
+}
+
+.bandeau-titre {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 1.05rem;
+  font-weight: 600;
+}
+
+.logo,
+.logo-grand {
+  flex: none;
+}
+
+.logo {
+  width: 22px;
+  height: 22px;
+}
+
+.logo-grand {
+  width: 48px;
+  height: 48px;
+  color: var(--vert-fonce);
+}
+
+.menu {
+  display: flex;
+  gap: 0.25rem;
+  flex: 1;
+}
+
+.menu a {
+  color: #e3ede7;
+  text-decoration: none;
+  padding: 0.45rem 0.9rem;
+  border-radius: var(--rayon);
+  font-size: 0.95rem;
+}
+
+.menu a:hover {
+  background: rgba(255, 255, 255, 0.12);
+  color: #fff;
+}
+
+.menu a.active {
+  background: rgba(255, 255, 255, 0.2);
+  color: #fff;
+  font-weight: 600;
+}
+
+.bandeau-profil {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.courriel {
+  font-size: 0.85rem;
+  opacity: 0.85;
+  max-width: 180px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.contenu {
+  flex: 1;
+  width: 100%;
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: 1.5rem;
+}
+
+.pied {
+  padding: 0.75rem 1.5rem;
+  text-align: center;
+  font-size: 0.8rem;
+  color: var(--encre-claire);
+}
+
+.centre {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 50vh;
+  color: var(--encre-claire);
+}
+
+.module h2 {
+  margin-top: 0;
+}
+
+.a-venir {
+  background: var(--vert-clair);
+  border: 1px solid var(--bordure);
+  border-radius: var(--rayon);
+  padding: 1rem 1.25rem;
+  color: var(--encre-claire);
+}
+
+/* --- Connexion --- */
+
+.connexion {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  background: linear-gradient(160deg, var(--vert-clair), var(--fond));
+}
+
+.carte-connexion {
+  width: 100%;
+  max-width: 380px;
+  background: var(--blanc);
+  border: 1px solid var(--bordure);
+  border-radius: 14px;
+  padding: 2rem;
+  text-align: center;
+  box-shadow: 0 8px 24px rgba(34, 48, 42, 0.08);
+}
+
+.carte-connexion h1 {
+  font-size: 1.25rem;
+  margin: 0.75rem 0 0.25rem;
+}
+
+.sous-titre {
+  margin: 0 0 1.25rem;
+  color: var(--encre-claire);
+  font-size: 0.9rem;
+}
+
+.carte-connexion form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  text-align: left;
+}
+
+label {
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+input {
+  font: inherit;
+  padding: 0.6rem 0.75rem;
+  border: 1px solid var(--bordure);
+  border-radius: var(--rayon);
+  background: var(--fond);
+}
+
+input:focus {
+  outline: 2px solid var(--vert-fonce);
+  outline-offset: -1px;
+  background: #fff;
+}
+
+.saisie-code {
+  text-align: center;
+  font-size: 1.4rem;
+  letter-spacing: 0.35em;
+}
+
+.btn {
+  font: inherit;
+  border: none;
+  border-radius: var(--rayon);
+  padding: 0.6rem 1rem;
+  cursor: pointer;
+}
+
+.btn.principal {
+  background: var(--vert-fonce);
+  color: #fff;
+  font-weight: 600;
+}
+
+.btn.principal:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+.btn.principal:hover:not(:disabled) {
+  background: #275a42;
+}
+
+.btn.discret {
+  background: rgba(255, 255, 255, 0.15);
+  color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  font-size: 0.85rem;
+}
+
+.btn.discret:hover {
+  background: rgba(255, 255, 255, 0.25);
+}
+
+.btn.lien {
+  background: none;
+  color: var(--encre-claire);
+  text-decoration: underline;
+  font-size: 0.85rem;
+}
+
+.info {
+  margin: 1rem 0 0;
+  font-size: 0.85rem;
+  color: var(--vert-fonce);
+  background: var(--vert-clair);
+  border-radius: var(--rayon);
+  padding: 0.75rem;
+}
+
+.erreur {
+  margin: 1rem 0 0;
+  font-size: 0.85rem;
+  color: var(--rouge);
+  background: #f9e9e6;
+  border-radius: var(--rayon);
+  padding: 0.75rem;
+}
