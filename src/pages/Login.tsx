@@ -22,13 +22,13 @@ export default function Login() {
     setEnCours(false)
     if (error) {
       if (error.status === 429) {
-        setErreur('Trop de demandes en peu de temps. Le service d\'envoi limite les courriels à deux par heure : patiente un peu avant de redemander un code.')
+        setErreur('Trop de demandes en peu de temps. Le service d’envoi limite les courriels à deux par heure : patiente un peu avant de redemander un code.')
         return
       }
-      setErreur('Envoi impossible pour cette adresse. Vérifie qu\'elle a bien été invitée par un administrateur.')
+      setErreur('Envoi impossible pour cette adresse. Vérifie qu’elle a bien été invitée par un administrateur.')
       return
     }
-    setInfo('Un code à six chiffres vient d\'être envoyé à ton adresse. Il expire dans une heure.')
+    setInfo('Un code vient d’être envoyé à ton adresse. Il expire dans une heure.')
     setEtape('code')
   }
 
@@ -85,15 +85,15 @@ export default function Login() {
 
         {etape === 'code' && (
           <form onSubmit={verifierCode}>
-            <label htmlFor="code">Code à six chiffres reçu par courriel</label>
+            <label htmlFor="code">Code reçu par courriel</label>
             <input
               id="code"
               inputMode="numeric"
               pattern="[0-9]*"
-              maxLength={6}
+              maxLength={10}
               required
               autoFocus
-              placeholder="000000"
+              placeholder="12345678"
               className="saisie-code"
               value={code}
               onChange={(e) => setCode(e.target.value)}
