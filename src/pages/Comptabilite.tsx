@@ -8,6 +8,7 @@ const GraphiquesCompta = lazy(() => import('../components/GraphiquesCompta'))
 import {
   afficherDateComplete,
   afficherMontant,
+  chargerAdmins,
   chargerCategories,
   chargerEntrees,
   chargerEstAdmin,
@@ -21,6 +22,7 @@ import {
   type ChampsEntree,
   type EntreeCompta,
   type PosteAnnee,
+  type RepartitionAnnee,
   type SoldeAnnuel,
 } from '../lib/comptabilite'
 import { afficherLongue, chargerProfils, versInputDate, type Profil } from '../lib/reservations'
@@ -45,6 +47,7 @@ export default function Comptabilite() {
   const [soldes, setSoldes] = useState<SoldeAnnuel[]>([])
   const [postes, setPostes] = useState<PosteAnnee[]>([])
   const [profils, setProfils] = useState<Profil[]>([])
+  const [admins, setAdmins] = useState<Profil[]>([])
   const [filtreAnnee, setFiltreAnnee] = useState('toutes')
   const [filtreCategorie, setFiltreCategorie] = useState('toutes')
   const [anneePoste, setAnneePoste] = useState<number | null>(null)
@@ -57,26 +60,32 @@ export default function Comptabilite() {
 
   const recharger = useCallback(async () => {
     try {
-      const [e, c, s, p, pro] = await Promise.all([
+      const [e, c, s, p, pro, adm] = await Promise.all([
         chargerEntrees(),
         chargerCategories(),
         chargerSoldesAnnuels(),
         chargerPostesAnnee(),
         chargerProfils(),
+        chargerAdmins(),
       ])
       setEntrees(e)
       setCategories(c)
       setSoldes(s)
       setPostes(p)
       setProfils(pro)
+      setAdmins(adm)
       setRefus(false)
       return true
     } catch (e) {
+      const code = (e as { code?: string })?.code ?? ''
       // Un non-admin qui force l'URL reçoit un refus RLS (42501) : on affiche
       // le message réservé plutôt qu'une erreur technique.
-      if ((e as { code?: string })?.code === '42501') {
+      if (code === '42501') {
         setRefus(true)
         setEntrees([])
+      } else if (code === '42703') {
+        // Colonne inconnue : la migration 001 n'est pas encore appliquée.
+        setErreur(messageErreurCompta(e))
       } else {
         setErreur('Impossible de charger la comptabilité. Recharge la page et réessaie.')
       }
@@ -110,6 +119,35 @@ export default function Comptabilite() {
   }, [postes])
 
   const anneePosteEffective = anneePoste ?? anneesPostes[0] ?? new Date().getFullYear()
+
+  // Répartition des règlements par membre et par année : qui a payé (coûts) ou
+  // reçu (recettes) combien, pour équilibrer les comptes en fin d'année.
+  const repartition = useMemo<RepartitionAnnee[]>(() => {
+    const parCle = new Map<string, { annee: number; membreId: string; membre: string; paye: number; recu: number }>()
+    for (const e of entrees ?? []) {
+      if (!e.regle_par) continue
+      const annee = Number(e.entry_date.slice(0, 4))
+      const cat = categories.find((c) => c.id === e.category_id)
+      const membre = profils.find((p) => p.id === e.regle_par)?.display_name ?? 'un membre'
+      const cle = `${annee}|${e.regle_par}`
+      const ligne = parCle.get(cle) ?? { annee, membreId: e.regle_par, membre, paye: 0, recu: 0 }
+      if (cat?.direction === 'recette') ligne.recu += Number(e.amount)
+      else ligne.paye += Number(e.amount)
+      parCle.set(cle, ligne)
+    }
+    const parAnnee = new Map<number, { membre: string; paye: number; recu: number }[]>()
+    for (const l of parCle.values()) {
+      const liste = parAnnee.get(l.annee) ?? []
+      liste.push({ membre: l.membre, paye: l.paye, recu: l.recu })
+      parAnnee.set(l.annee, liste)
+    }
+    return Array.from(parAnnee.entries())
+      .map(([annee, lignes]) => ({
+        annee,
+        lignes: lignes.sort((a, b) => b.paye + b.recu - (a.paye + a.recu)),
+      }))
+      .sort((a, b) => b.annee - a.annee)
+  }, [entrees, categories, profils])
 
   const filtrees = useMemo(() => {
     if (!entrees) return []
@@ -150,6 +188,8 @@ export default function Comptabilite() {
         entry_date: versInputDate(new Date()),
         label: '',
         comment: '',
+        regle_par: '',
+        date_reglement: '',
       },
     })
   }
@@ -166,6 +206,8 @@ export default function Comptabilite() {
         entry_date: e.entry_date,
         label: e.label ?? '',
         comment: e.comment ?? '',
+        regle_par: e.regle_par ?? '',
+        date_reglement: e.date_reglement ?? '',
       },
     })
   }
@@ -243,6 +285,7 @@ export default function Comptabilite() {
           key={formulaire.mode === 'edition' ? (formulaire.entree?.id ?? 'edition') : 'creation'}
           initial={formulaire.initial}
           categories={categories}
+          admins={admins}
           enEdition={formulaire.mode === 'edition'}
           meta={formulaire.entree ? metaEntree(formulaire.entree) : undefined}
           enCours={enCours}
@@ -266,6 +309,7 @@ export default function Comptabilite() {
                 annees={anneesPostes.length > 0 ? anneesPostes : annees.map(Number)}
                 anneePoste={anneePosteEffective}
                 onChangeAnnee={setAnneePoste}
+                repartition={repartition}
               />
             </Suspense>
           )}
@@ -319,6 +363,8 @@ export default function Comptabilite() {
                     <th>Montant</th>
                     <th>Libellé</th>
                     <th>Commentaire</th>
+                    <th>Payé/reçu par</th>
+                    <th>Date de règlement</th>
                     <th>Saisie par</th>
                   </tr>
                 </thead>
@@ -340,6 +386,14 @@ export default function Comptabilite() {
                         </td>
                         <td>{e.label ?? ''}</td>
                         <td>{e.comment ?? ''}</td>
+                        <td className="auteur">
+                          {e.regle_par
+                            ? profils.find((p) => p.id === e.regle_par)?.display_name ?? '—'
+                            : ''}
+                        </td>
+                        <td className="date">
+                          {e.date_reglement ? afficherDateComplete(e.date_reglement) : ''}
+                        </td>
                         <td className="auteur">{nomAuteur(e)}</td>
                       </tr>
                     )
