@@ -42,6 +42,9 @@ d'Auth et de la RLS côté Supabase, jamais de l'obscurité.
 - Le push sur `main` déclenche le workflow GitHub Actions
   (`.github/workflows/deploy.yml` : `npm install`, `tsc --noEmit`,
   `vite build`, publication Pages). Un push est un déploiement.
+- La SPA utilise BrowserRouter : `vite.config.ts` copie `dist/index.html` en
+  `dist/404.html` au build, pour que GitHub Pages serve l'application (et non
+  une erreur 404) au rechargement d'une URL directe comme `/connexion`.
 - Ne jamais pousser sans demande explicite. Committer localement n'est pas
   déployer : attendre la validation avant le push.
 - Après un push, vérifier le run dans l'onglet Actions du dépôt, puis le
