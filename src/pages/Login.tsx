@@ -62,7 +62,7 @@ export default function Login() {
         <svg className="logo-grand" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
           <path d="M3 9.5 12 3l9 6.5V21a1 1 0 0 1-1 1h-5v-7h-6v7H4a1 1 0 0 1-1-1z" />
         </svg>
-        <h1>Appartement familial</h1>
+        <h1>Appartement Bormes</h1>
         <p className="sous-titre">Réservé aux membres de la famille</p>
 
         {etape === 'courriel' && (
